@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chef Rhi's Kitchen — Staff Operations Guide</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 15px; line-height: 1.6; color: #1a1a1a; background: #fff; max-width: 860px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+
+  /* Header */
+  .doc-header { background: #1a1a1a; color: #fff; border-radius: 12px; padding: 2rem 2rem 1.5rem; margin-bottom: 2rem; }
+  .doc-header h1 { font-size: 22px; font-weight: 700; letter-spacing: -0.3px; margin-bottom: 4px; }
+  .doc-header .subtitle { font-size: 14px; color: #aaa; margin-bottom: 1rem; }
+  .doc-header .meta { display: flex; gap: 16px; flex-wrap: wrap; }
+  .doc-header .meta span { font-size: 13px; color: #888; background: #2d2d2d; border-radius: 6px; padding: 4px 10px; }
+
+  /* TOC */
+  .toc { border: 1px solid #e5e5e5; border-radius: 10px; padding: 1.25rem 1.5rem; margin-bottom: 2rem; background: #fafafa; }
+  .toc h2 { font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: #888; margin-bottom: 0.75rem; }
+  .toc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 6px; }
+  .toc a { font-size: 13.5px; color: #444; text-decoration: none; padding: 5px 8px; border-radius: 6px; display: flex; align-items: center; gap: 7px; transition: background 0.15s; }
+  .toc a:hover { background: #ebebeb; color: #111; }
+  .toc a .num { font-size: 11px; font-weight: 600; color: #aaa; min-width: 18px; }
+
+  /* Sections */
+  .section { margin-bottom: 2.5rem; }
+  .section-header { display: flex; align-items: center; gap: 12px; margin-bottom: 1.25rem; padding-bottom: 0.75rem; border-bottom: 2px solid #f0f0f0; }
+  .section-num { width: 32px; height: 32px; border-radius: 8px; background: #1a1a1a; color: #fff; font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .section-title { font-size: 20px; font-weight: 700; color: #111; }
+
+  h3 { font-size: 14px; font-weight: 600; color: #333; margin: 1.25rem 0 0.6rem; text-transform: uppercase; letter-spacing: 0.05em; }
+
+  /* Callout boxes */
+  .callout { border-radius: 8px; padding: 0.85rem 1rem; margin: 1rem 0; display: flex; gap: 10px; align-items: flex-start; font-size: 14px; line-height: 1.55; }
+  .callout.info { background: #EFF6FF; border-left: 3px solid #3B82F6; }
+  .callout.warning { background: #FFFBEB; border-left: 3px solid #F59E0B; }
+  .callout.danger { background: #FEF2F2; border-left: 3px solid #EF4444; }
+  .callout.success { background: #F0FDF4; border-left: 3px solid #22C55E; }
+  .callout.rule { background: #F5F3FF; border-left: 3px solid #7C3AED; }
+  .callout-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+  .callout strong { font-weight: 600; display: block; margin-bottom: 2px; color: inherit; }
+
+  /* Tables */
+  .table-wrap { overflow-x: auto; margin: 0.75rem 0 1rem; border-radius: 8px; border: 1px solid #e8e8e8; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  thead th { background: #f5f5f5; font-weight: 600; padding: 10px 14px; text-align: left; color: #444; font-size: 13px; border-bottom: 1px solid #e0e0e0; }
+  tbody td { padding: 9px 14px; border-bottom: 1px solid #f0f0f0; vertical-align: top; color: #333; }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover td { background: #fafafa; }
+  .badge { display: inline-block; font-size: 11.5px; font-weight: 600; padding: 2px 8px; border-radius: 20px; }
+  .badge.new { background: #DBEAFE; color: #1D4ED8; }
+  .badge.confirmed { background: #D1FAE5; color: #065F46; }
+  .badge.inprogress { background: #FEF3C7; color: #92400E; }
+  .badge.ready { background: #F3E8FF; color: #6B21A8; }
+  .badge.completed { background: #F0F9FF; color: #075985; }
+
+  /* Checklist */
+  .checklist { list-style: none; padding: 0; }
+  .checklist li { padding: 6px 0 6px 28px; position: relative; font-size: 14.5px; color: #333; border-bottom: 1px solid #f5f5f5; }
+  .checklist li:last-child { border-bottom: none; }
+  .checklist li::before { content: '☐'; position: absolute; left: 0; color: #bbb; font-size: 16px; line-height: 1.4; }
+
+  .checklist-group { background: #fafafa; border-radius: 8px; border: 1px solid #ebebeb; margin: 0.75rem 0 1rem; padding: 0.75rem 1rem; }
+  .checklist-group h4 { font-size: 12.5px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; color: #888; margin-bottom: 0.5rem; }
+
+  /* Do not touch grid */
+  .dont-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 10px; margin-top: 0.75rem; }
+  .dont-card { background: #FEF2F2; border: 1px solid #FCA5A5; border-radius: 8px; padding: 0.85rem 1rem; }
+  .dont-card .dont-label { font-size: 13px; font-weight: 700; color: #991B1B; margin-bottom: 4px; }
+  .dont-card .dont-reason { font-size: 13px; color: #7F1D1D; }
+
+  .step-list { list-style: none; padding: 0; counter-reset: steps; }
+  .step-list li { padding: 7px 0 7px 36px; position: relative; font-size: 14.5px; color: #333; border-bottom: 1px solid #f5f5f5; counter-increment: steps; }
+  .step-list li:last-child { border-bottom: none; }
+  .step-list li::before { content: counter(steps); position: absolute; left: 0; top: 6px; width: 22px; height: 22px; background: #1a1a1a; color: #fff; border-radius: 50%; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; text-align: center; line-height: 22px; }
+
+  .tab-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px; margin-top: 0.75rem; }
+  .tab-card { border: 1px solid #e5e5e5; border-radius: 8px; padding: 0.75rem 1rem; background: #fff; }
+  .tab-card .tab-name { font-size: 13px; font-weight: 700; color: #111; margin-bottom: 4px; }
+  .tab-card .tab-desc { font-size: 12.5px; color: #666; line-height: 1.45; }
+
+  footer { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid #eee; font-size: 12.5px; color: #aaa; text-align: center; }
+  a { color: #2563EB; }
+</style>
+</head>
+<body>
+
+<div class="doc-header">
+  <h1>Chef Rhi's Kitchen — Staff Operations Guide</h1>
+  <p class="subtitle">How to use the Order Management System (OMS)</p>
+  <div class="meta">
+    <span>Version 1.0</span>
+    <span>June 2026</span>
+    <span>🔗 c3jumpw.github.io/Rhis-Kitchen</span>
+  </div>
+</div>
+
+<!-- Table of Contents -->
+<div class="toc">
+  <h2>Contents</h2>
+  <div class="toc-grid">
+    <a href="#s1"><span class="num">1</span> What This System Does</a>
+    <a href="#s2"><span class="num">2</span> Signing In</a>
+    <a href="#s3"><span class="num">3</span> Taking a New Order</a>
+    <a href="#s4"><span class="num">4</span> Managing Orders</a>
+    <a href="#s5"><span class="num">5</span> Customer Profiles</a>
+    <a href="#s6"><span class="num">6</span> The Grocery List</a>
+    <a href="#s7"><span class="num">7</span> Blast Announcements</a>
+    <a href="#s8"><span class="num">8</span> What NOT to Touch</a>
+    <a href="#s9"><span class="num">9</span> Daily Checklist</a>
+  </div>
+</div>
+
+<!-- Section 1 -->
+<div class="section" id="s1">
+  <div class="section-header">
+    <div class="section-num">1</div>
+    <div class="section-title">What This System Does</div>
+  </div>
+  <p style="font-size:14.5px; color:#444; margin-bottom:1rem;">The OMS is your digital command center for taking orders, tracking progress, managing the menu, and keeping customers organized. Every action automatically updates the backend — nothing falls through the cracks.</p>
+  <div class="callout rule">
+    <span class="callout-icon">🔒</span>
+    <div><strong>Important rule</strong> You are the source of truth. All changes happen through this app — not directly in Google Sheets or ClickUp. Manual edits to Sheets cause data to go out of sync.</div>
+  </div>
+  <h3>App Tabs</h3>
+  <div class="tab-grid">
+    <div class="tab-card"><div class="tab-name">📊 Dashboard</div><div class="tab-desc">Active orders, revenue, pipeline status, and blast announcements</div></div>
+    <div class="tab-card"><div class="tab-name">📋 Orders</div><div class="tab-desc">Kanban board showing all orders by status — your main working view</div></div>
+    <div class="tab-card"><div class="tab-name">➕ New Order</div><div class="tab-desc">Add a new customer order manually</div></div>
+    <div class="tab-card"><div class="tab-name">🍽 Menu</div><div class="tab-desc">View and add menu items</div></div>
+    <div class="tab-card"><div class="tab-name">👤 Customers</div><div class="tab-desc">Profiles, order history, and tags</div></div>
+    <div class="tab-card"><div class="tab-name">🛒 Grocery</div><div class="tab-desc">Auto-generated shopping list from confirmed orders</div></div>
+    <div class="tab-card"><div class="tab-name">⚙️ Settings</div><div class="tab-desc">Admin-only — staff do not need this tab</div></div>
+  </div>
+</div>
+
+<!-- Section 2 -->
+<div class="section" id="s2">
+  <div class="section-header">
+    <div class="section-num">2</div>
+    <div class="section-title">Signing In</div>
+  </div>
+  <p style="font-size:14.5px; color:#444; margin-bottom:0.75rem;">A passcode screen appears every time you open the app. This keeps customer data secure.</p>
+  <ol class="step-list">
+    <li>Open the app: <a href="https://c3jumpw.github.io/Rhis-Kitchen" target="_blank">c3jumpw.github.io/Rhis-Kitchen</a></li>
+    <li>Enter your personal 4-digit passcode</li>
+    <li>Your name appears in the top right corner when signed in</li>
+  </ol>
+  <div class="callout info" style="margin-top:0.75rem;">
+    <span class="callout-icon">👤</span>
+    <div><strong>Passcodes</strong> Jeff: <code>1234</code> &nbsp;·&nbsp; Rhi: <code>1234</code> &nbsp;·&nbsp; Update these in Google Sheets → Employees tab once live.</div>
+  </div>
+</div>
+
+<!-- Section 3 -->
+<div class="section" id="s3">
+  <div class="section-header">
+    <div class="section-num">3</div>
+    <div class="section-title">Taking a New Order</div>
+  </div>
+  <p style="font-size:14.5px; color:#444; margin-bottom:0.75rem;">Use this when a customer contacts you directly (text, call, DM). Go to <strong>+ New Order</strong> in the top navigation.</p>
+
+  <h3>What to fill in</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Field</th><th>What to enter</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Name</strong></td><td>Customer's full name — type to search existing, or enter new</td></tr>
+        <tr><td><strong>Phone</strong></td><td>With area code, e.g. 4045550100</td></tr>
+        <tr><td><strong>Email</strong></td><td>Optional but recommended — needed for email receipts</td></tr>
+        <tr><td><strong>Pickup Date</strong></td><td>The date they plan to pick up</td></tr>
+        <tr><td><strong>Pickup Time</strong></td><td>Select from 11:00 AM – 7:00 PM dropdown</td></tr>
+        <tr><td><strong>Items</strong></td><td>Click + to add each item and quantity</td></tr>
+        <tr><td><strong>Tax</strong></td><td>Leave at 0% unless required — ask Jeffrey if unsure</td></tr>
+        <tr><td><strong>Payment Method</strong></td><td>Cash App / Zelle / Stripe / Cash / PayPal</td></tr>
+        <tr><td><strong>Payment Status</strong></td><td>Unpaid / Deposit Paid / Paid In Full</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>What NOT to do</h3>
+  <ul style="margin-top:0.5rem; padding-left:1.5rem; font-size:14px; color:#555;">
+    <li style="margin-bottom:5px;">Do not enter a fake or test name — all orders go to Google Sheets and ClickUp</li>
+    <li style="margin-bottom:5px;">Do not leave phone number blank — it's required for customer records</li>
+    <li>Do not change the tax rate unless Jeffrey has approved it</li>
+  </ul>
+
+  <h3>Submitting</h3>
+  <ol class="step-list" style="margin-top:0.5rem;">
+    <li>Review the subtotal and total at the bottom</li>
+    <li>Click <strong>Add to Workflow</strong></li>
+    <li>Confirmation toast appears — order is on the Kanban board</li>
+  </ol>
+  <div class="callout success" style="margin-top:0.75rem;">
+    <span class="callout-icon">⚡</span>
+    <div><strong>What happens automatically</strong> The order is sent to ClickUp, added to Google Sheets, and (once SMS/email is live) a confirmation text and email go to the customer. You don't need to do anything else.</div>
+  </div>
+</div>
+
+<!-- Section 4 -->
+<div class="section" id="s4">
+  <div class="section-header">
+    <div class="section-num">4</div>
+    <div class="section-title">Managing Orders (Kanban Board)</div>
+  </div>
+  <p style="font-size:14.5px; color:#444; margin-bottom:0.75rem;">The <strong>Orders</strong> tab shows all active orders as cards in columns. Each column is a stage in fulfillment.</p>
+
+  <h3>Order Statuses</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Status</th><th>What it means</th></tr></thead>
+      <tbody>
+        <tr><td><span class="badge new">New</span></td><td>Order taken, not yet confirmed with the customer</td></tr>
+        <tr><td><span class="badge confirmed">Confirmed</span></td><td>Customer confirmed — order is locked in</td></tr>
+        <tr><td><span class="badge inprogress">In Progress</span></td><td>Rhi is cooking this order</td></tr>
+        <tr><td><span class="badge ready">Ready</span></td><td>Packaged and ready for pickup — customer gets notified</td></tr>
+        <tr><td><span class="badge completed">Completed</span></td><td>Customer picked up the order</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>How to update an order status</h3>
+  <ol class="step-list">
+    <li>Click the order card to open the detail view</li>
+    <li>Change the <strong>Order Status</strong> dropdown to the new stage</li>
+    <li>Optionally update <strong>Payment Status</strong> if they've paid</li>
+    <li>Click <strong>Done</strong> — the card moves and ClickUp updates automatically</li>
+  </ol>
+  <div class="callout warning">
+    <span class="callout-icon">📋</span>
+    <div><strong>Ready status is important</strong> Marking an order as Ready triggers an automatic text and email to the customer (once Twilio and SendGrid are activated). Only mark Ready when the food is actually packaged and waiting.</div>
+  </div>
+
+  <h3>Voiding an order</h3>
+  <p style="font-size:14px; color:#444; margin-bottom:0.5rem;">If a customer cancels or an order needs to be removed from revenue:</p>
+  <ol class="step-list">
+    <li>Open the order card</li>
+    <li>Click <strong>Void Order</strong> (red button)</li>
+    <li>The order stays on record but is excluded from revenue totals</li>
+  </ol>
+</div>
+
+<!-- Section 5 -->
+<div class="section" id="s5">
+  <div class="section-header">
+    <div class="section-num">5</div>
+    <div class="section-title">Customer Profiles</div>
+  </div>
+  <p style="font-size:14.5px; color:#444; margin-bottom:0.75rem;">Every order creates a customer record. Go to the <strong>Customers</strong> tab to view profiles.</p>
+
+  <h3>What you can do</h3>
+  <ul style="padding-left:1.5rem; font-size:14px; color:#444;">
+    <li style="margin-bottom:5px;">Click any customer card to open their profile</li>
+    <li style="margin-bottom:5px;">Tap <strong>Email</strong>, <strong>Text</strong>, or <strong>Call</strong> to contact them directly from the app</li>
+    <li style="margin-bottom:5px;">View full order history and total spent</li>
+    <li>Add tags to segment them (e.g. VIP, Oxtail Regular, Family &amp; Friends)</li>
+  </ul>
+
+  <h3>Adding tags</h3>
+  <ol class="step-list">
+    <li>Open the customer profile</li>
+    <li>In the <strong>Segments / Tags</strong> section, start typing a tag name</li>
+    <li>Select from dropdown suggestions or type a new one</li>
+    <li>The tag appears on their profile and in the filter bar</li>
+  </ol>
+  <div class="callout info">
+    <span class="callout-icon">🏷</span>
+    <div><strong>Tags are for organizing, not required</strong> Tags help Jeffrey send targeted blasts (e.g. text only VIP customers about an exclusive offer). You don't have to tag every customer, but it helps over time.</div>
+  </div>
+
+  <h3>Things NOT to do in Customers</h3>
+  <ul style="padding-left:1.5rem; font-size:14px; color:#444;">
+    <li style="margin-bottom:5px;">Do not use the <strong>Remove</strong> button unless a customer explicitly requests deletion</li>
+    <li>Do not edit phone numbers — they link to order history</li>
+  </ul>
+</div>
+
+<!-- Section 6 -->
+<div class="section" id="s6">
+  <div class="section-header">
+    <div class="section-num">6</div>
+    <div class="section-title">The Grocery List</div>
+  </div>
+  <p style="font-size:14.5px; color:#444; margin-bottom:0.75rem;">The <strong>Grocery</strong> tab automatically calculates what you need to buy based on confirmed orders. Use this before every shopping run.</p>
+  <ol class="step-list">
+    <li>Go to the <strong>Grocery</strong> tab</li>
+    <li>Select a specific pickup date, or check <strong>All Pending Orders</strong></li>
+    <li>The shopping list generates automatically from orders in progress</li>
+    <li>The estimated cost shows on the right</li>
+  </ol>
+  <div class="callout info">
+    <span class="callout-icon">📝</span>
+    <div><strong>For Rhi</strong> The grocery list shows ingredient quantities based on menu item settings. The more accurate the recipe data (ingredients, servings per pan), the more accurate this list will be. Work with Jeffrey to update ingredient data when menu items change.</div>
+  </div>
+</div>
+
+<!-- Section 7 -->
+<div class="section" id="s7">
+  <div class="section-header">
+    <div class="section-num">7</div>
+    <div class="section-title">Blast Announcements</div>
+  </div>
+  <p style="font-size:14.5px; color:#444; margin-bottom:0.75rem;">Blasts are mass announcements — used to tell customers about upcoming availability, specials, or order cutoffs. Found on the <strong>Dashboard</strong> tab.</p>
+  <div class="callout info" style="margin-bottom:1rem;">
+    <span class="callout-icon">👤</span>
+    <div><strong>Who sends blasts</strong> Jeffrey handles blasts. Rhi does not need to use this feature.</div>
+  </div>
+
+  <h3>How Jeffrey sends a blast</h3>
+  <ol class="step-list">
+    <li>Go to <strong>Dashboard</strong></li>
+    <li>Fill in <strong>Occasion</strong> (e.g. Mother's Day Special)</li>
+    <li>Set the <strong>Order Cutoff</strong> date</li>
+    <li>Write the message</li>
+    <li>Choose who to send to — <strong>All Customers</strong> or a specific tag segment</li>
+    <li>Check <strong>SMS</strong>, <strong>Email</strong>, or both</li>
+    <li>Click <strong>Send Blast</strong></li>
+  </ol>
+  <div class="callout danger">
+    <span class="callout-icon">⚠️</span>
+    <div><strong>Once sent, it cannot be unsent</strong> Review the message carefully before clicking Send Blast. The text and email go out immediately to every customer in the selected group.</div>
+  </div>
+</div>
+
+<!-- Section 8 -->
+<div class="section" id="s8">
+  <div class="section-header">
+    <div class="section-num">8</div>
+    <div class="section-title">What NOT to Touch</div>
+  </div>
+  <div class="dont-grid">
+    <div class="dont-card"><div class="dont-label">⚙️ Settings tab</div><div class="dont-reason">Technical Admin only — changing URLs or API keys breaks the system</div></div>
+    <div class="dont-card"><div class="dont-label">📊 Google Sheets directly</div><div class="dont-reason">The app writes to Sheets automatically. Manual edits cause duplicates and errors</div></div>
+    <div class="dont-card"><div class="dont-label">✅ ClickUp tasks directly</div><div class="dont-reason">Use the app to update order status. Only check Sync to Sheet if you must edit in ClickUp</div></div>
+    <div class="dont-card"><div class="dont-label">🗑 Clear All Orders button</div><div class="dont-reason">Permanently wipes the current session — data in Sheets is safe but the app resets</div></div>
+    <div class="dont-card"><div class="dont-label">⬇️ Download App button</div><div class="dont-reason">For the Technical Admin to redeploy updates only</div></div>
+  </div>
+</div>
+
+<!-- Section 9 -->
+<div class="section" id="s9">
+  <div class="section-header">
+    <div class="section-num">9</div>
+    <div class="section-title">Quick Reference — Daily Checklist</div>
+  </div>
+
+  <div class="checklist-group">
+    <h4>🌅 At the start of every pickup day</h4>
+    <ul class="checklist">
+      <li>Open the app and sign in</li>
+      <li>Go to <strong>Orders</strong> — confirm which orders are expected today</li>
+      <li>Go to <strong>Grocery</strong> tab — cross-reference your shopping list</li>
+    </ul>
+  </div>
+
+  <div class="checklist-group">
+    <h4>📥 When a new order comes in</h4>
+    <ul class="checklist">
+      <li>Go to <strong>+ New Order</strong> and fill in all fields</li>
+      <li>Confirm the total with the customer before submitting</li>
+      <li>Click <strong>Add to Workflow</strong> — done</li>
+    </ul>
+  </div>
+
+  <div class="checklist-group">
+    <h4>🍳 As you cook</h4>
+    <ul class="checklist">
+      <li>Move orders from <strong>Confirmed → In Progress</strong> in the app</li>
+      <li>When packaged and ready, move to <strong>Ready</strong></li>
+      <li>When picked up, move to <strong>Completed</strong></li>
+    </ul>
+  </div>
+
+  <div class="checklist-group">
+    <h4>🔧 If something looks wrong</h4>
+    <ul class="checklist">
+      <li><strong>Order not appearing?</strong> Try clicking <strong>Sync to Workflow</strong> on the Orders tab</li>
+      <li><strong>Customer data missing?</strong> Tell Jeffrey — he can run a force sync from Settings</li>
+      <li><strong>App not loading?</strong> Check your internet connection and try refreshing</li>
+      <li><strong>Anything else?</strong> Contact Mambay (MK) for technical issues</li>
+    </ul>
+  </div>
+</div>
+
+<footer>Confidential — Internal Use Only &nbsp;·&nbsp; Chef Rhi's Kitchen &nbsp;·&nbsp; Version 1.0 · June 2026</footer>
+</body>
+</html>
