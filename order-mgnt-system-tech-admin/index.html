@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chef Rhi's Kitchen — Technical Admin Guide</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 15px; line-height: 1.6; color: #1a1a1a; background: #fff; max-width: 900px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+
+  /* Header */
+  .doc-header { background: #0f172a; color: #fff; border-radius: 12px; padding: 2rem 2rem 1.5rem; margin-bottom: 2rem; }
+  .doc-header .restrict { display: inline-block; background: #dc2626; color: #fff; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 3px 10px; border-radius: 4px; margin-bottom: 10px; }
+  .doc-header h1 { font-size: 22px; font-weight: 700; letter-spacing: -0.3px; margin-bottom: 4px; }
+  .doc-header .subtitle { font-size: 14px; color: #94a3b8; margin-bottom: 1rem; }
+  .doc-header .meta { display: flex; gap: 12px; flex-wrap: wrap; }
+  .doc-header .meta span { font-size: 13px; color: #94a3b8; background: #1e293b; border-radius: 6px; padding: 4px 10px; }
+
+  /* TOC */
+  .toc { border: 1px solid #e5e5e5; border-radius: 10px; padding: 1.25rem 1.5rem; margin-bottom: 2rem; background: #fafafa; }
+  .toc h2 { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; color: #888; margin-bottom: 0.75rem; }
+  .toc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 5px; }
+  .toc a { font-size: 13.5px; color: #444; text-decoration: none; padding: 5px 8px; border-radius: 6px; display: flex; align-items: center; gap: 7px; }
+  .toc a:hover { background: #ebebeb; color: #111; }
+  .toc a .num { font-size: 11px; font-weight: 700; color: #aaa; min-width: 16px; }
+
+  /* Sections */
+  .section { margin-bottom: 2.75rem; }
+  .section-header { display: flex; align-items: center; gap: 12px; margin-bottom: 1.25rem; padding-bottom: 0.75rem; border-bottom: 2px solid #f0f0f0; }
+  .section-num { width: 32px; height: 32px; border-radius: 8px; background: #0f172a; color: #fff; font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .section-title { font-size: 20px; font-weight: 700; color: #111; }
+
+  h3 { font-size: 13px; font-weight: 700; color: #555; margin: 1.4rem 0 0.6rem; text-transform: uppercase; letter-spacing: 0.06em; }
+
+  /* Callouts */
+  .callout { border-radius: 8px; padding: 0.85rem 1rem; margin: 1rem 0; display: flex; gap: 10px; align-items: flex-start; font-size: 14px; line-height: 1.55; }
+  .callout.info { background: #EFF6FF; border-left: 3px solid #3B82F6; }
+  .callout.warning { background: #FFFBEB; border-left: 3px solid #F59E0B; }
+  .callout.danger { background: #FEF2F2; border-left: 3px solid #EF4444; }
+  .callout.success { background: #F0FDF4; border-left: 3px solid #22C55E; }
+  .callout.neutral { background: #F8FAFC; border-left: 3px solid #94a3b8; }
+  .callout-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+  .callout strong { font-weight: 600; display: block; margin-bottom: 2px; }
+
+  /* Tables */
+  .table-wrap { overflow-x: auto; margin: 0.75rem 0 1rem; border-radius: 8px; border: 1px solid #e8e8e8; }
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  thead th { background: #f5f5f5; font-weight: 600; padding: 10px 14px; text-align: left; color: #444; font-size: 12.5px; border-bottom: 1px solid #e0e0e0; }
+  tbody td { padding: 9px 14px; border-bottom: 1px solid #f0f0f0; vertical-align: top; color: #333; }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover td { background: #fafafa; }
+  code { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; background: #f1f5f9; color: #0f172a; padding: 1px 5px; border-radius: 4px; }
+
+  /* Status badges */
+  .badge { display: inline-block; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 20px; white-space: nowrap; }
+  .badge.live { background: #DCFCE7; color: #166534; }
+  .badge.pending { background: #FEF3C7; color: #92400E; }
+  .badge.built { background: #E0E7FF; color: #3730A3; }
+
+  /* Architecture component cards */
+  .arch-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; margin-top: 0.75rem; }
+  .arch-card { border: 1px solid #e2e8f0; border-radius: 10px; padding: 0.9rem 1rem; background: #fff; }
+  .arch-card .arch-icon { font-size: 22px; margin-bottom: 6px; }
+  .arch-card .arch-name { font-size: 13.5px; font-weight: 700; color: #111; margin-bottom: 4px; }
+  .arch-card .arch-role { font-size: 12.5px; color: #666; line-height: 1.4; margin-bottom: 6px; }
+  .arch-card .arch-cred { font-size: 11.5px; color: #94a3b8; }
+
+  /* Data flow */
+  .flow-list { list-style: none; padding: 0; margin: 0.75rem 0; }
+  .flow-list li { display: flex; align-items: flex-start; gap: 10px; padding: 7px 0; font-size: 13.5px; color: #444; border-bottom: 1px solid #f5f5f5; }
+  .flow-list li:last-child { border-bottom: none; }
+  .flow-zap { font-size: 11px; font-weight: 700; background: #FF4A00; color: #fff; padding: 2px 7px; border-radius: 4px; white-space: nowrap; flex-shrink: 0; margin-top: 2px; }
+  .flow-arrow { color: #cbd5e1; flex-shrink: 0; margin-top: 2px; }
+
+  /* Steps */
+  .step-list { list-style: none; padding: 0; counter-reset: steps; }
+  .step-list li { padding: 7px 0 7px 36px; position: relative; font-size: 14px; color: #333; border-bottom: 1px solid #f5f5f5; counter-increment: steps; }
+  .step-list li:last-child { border-bottom: none; }
+  .step-list li::before { content: counter(steps); position: absolute; left: 0; top: 7px; width: 22px; height: 22px; background: #0f172a; color: #fff; border-radius: 50%; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; text-align: center; line-height: 22px; }
+
+  /* Troubleshooting */
+  .trouble-list { list-style: none; padding: 0; margin-top: 0.75rem; }
+  .trouble-item { border: 1px solid #e8e8e8; border-radius: 8px; margin-bottom: 8px; overflow: hidden; }
+  .trouble-problem { background: #fef9f0; padding: 0.6rem 1rem; font-size: 13.5px; font-weight: 600; color: #92400E; border-bottom: 1px solid #fde68a; }
+  .trouble-body { display: grid; grid-template-columns: 1fr 1fr; padding: 0; }
+  .trouble-cause, .trouble-fix { padding: 0.65rem 1rem; font-size: 13px; }
+  .trouble-cause { background: #fff; border-right: 1px solid #f0f0f0; color: #555; }
+  .trouble-fix { background: #f0fdf4; color: #166534; }
+  .trouble-label { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: #aaa; margin-bottom: 3px; }
+  .trouble-fix .trouble-label { color: #86efac; }
+
+  /* Maintenance schedule */
+  .maint-block { border: 1px solid #e5e5e5; border-radius: 8px; margin-bottom: 10px; overflow: hidden; }
+  .maint-header { background: #f8fafc; padding: 0.6rem 1rem; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid #e5e5e5; }
+  .maint-freq { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: #475569; }
+  .maint-who { font-size: 12px; color: #94a3b8; }
+  .maint-body { padding: 0.5rem 1rem 0.75rem; }
+  .maint-body ul { padding-left: 1.4rem; }
+  .maint-body li { font-size: 13.5px; color: #444; padding: 4px 0; }
+
+  /* Roadmap */
+  .roadmap-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 10px; margin-top: 0.75rem; }
+  .roadmap-card { border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.9rem 1rem; }
+  .roadmap-card .roadmap-title { font-size: 13.5px; font-weight: 700; color: #111; margin-bottom: 5px; }
+  .roadmap-card .roadmap-desc { font-size: 13px; color: #666; line-height: 1.45; }
+
+  footer { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid #eee; font-size: 12px; color: #aaa; text-align: center; }
+  a { color: #2563EB; }
+</style>
+</head>
+<body>
+
+<div class="doc-header">
+  <div class="restrict">⛔ Confidential — Restricted Distribution</div>
+  <h1>Chef Rhi's Kitchen — Technical Admin Guide</h1>
+  <p class="subtitle">System architecture, configuration, maintenance, and troubleshooting</p>
+  <div class="meta">
+    <span>Version 1.0</span>
+    <span>June 2026</span>
+    <span>🔗 c3jumpw.github.io/Rhis-Kitchen</span>
+  </div>
+</div>
+
+<!-- TOC -->
+<div class="toc">
+  <h2>Contents</h2>
+  <div class="toc-grid">
+    <a href="#s1"><span class="num">1</span> System Architecture</a>
+    <a href="#s2"><span class="num">2</span> Credentials &amp; Keys</a>
+    <a href="#s3"><span class="num">3</span> Deploying App Updates</a>
+    <a href="#s4"><span class="num">4</span> Zapier Zap Reference</a>
+    <a href="#s5"><span class="num">5</span> ClickUp Configuration</a>
+    <a href="#s6"><span class="num">6</span> Troubleshooting</a>
+    <a href="#s7"><span class="num">7</span> Routine Maintenance</a>
+    <a href="#s8"><span class="num">8</span> Future Roadmap</a>
+  </div>
+</div>
+
+<!-- Section 1 -->
+<div class="section" id="s1">
+  <div class="section-header">
+    <div class="section-num">1</div>
+    <div class="section-title">System Architecture</div>
+  </div>
+  <p style="font-size:14.5px; color:#444; margin-bottom:1rem;">The OMS is a static HTML single-page application on GitHub Pages — no traditional backend. All persistence and automation runs through Zapier webhooks, the ClickUp API, and Google Sheets as the master data store.</p>
+
+  <div class="arch-grid">
+    <div class="arch-card">
+      <div class="arch-icon">📦</div>
+      <div class="arch-name">GitHub Pages</div>
+      <div class="arch-role">Hosts the web app (index.html)</div>
+      <div class="arch-cred">c3jumpw@gmail.com · Repo: c3jumpw/Rhis-Kitchen</div>
+    </div>
+    <div class="arch-card">
+      <div class="arch-icon">📊</div>
+      <div class="arch-name">Google Sheets</div>
+      <div class="arch-role">Master data store for all records</div>
+      <div class="arch-cred">Spreadsheet ID: <code>1f26CQ0ee…</code></div>
+    </div>
+    <div class="arch-card">
+      <div class="arch-icon">✅</div>
+      <div class="arch-name">ClickUp</div>
+      <div class="arch-role">Order pipeline &amp; CRM view</div>
+      <div class="arch-cred">Workspace: JA Unlimited LLC · List ID: 901326954708</div>
+    </div>
+    <div class="arch-card">
+      <div class="arch-icon">⚡</div>
+      <div class="arch-name">Zapier</div>
+      <div class="arch-role">Automation between all services</div>
+      <div class="arch-cred">Jeffrey Akukwe's account · Folder: CRK</div>
+    </div>
+    <div class="arch-card" style="border-style: dashed; background:#fffbeb;">
+      <div class="arch-icon">💬</div>
+      <div class="arch-name">Twilio</div>
+      <div class="arch-role">SMS notifications</div>
+      <div class="arch-cred">⏳ Pending registration at twilio.com</div>
+    </div>
+    <div class="arch-card" style="border-style: dashed; background:#fffbeb;">
+      <div class="arch-icon">📧</div>
+      <div class="arch-name">SendGrid</div>
+      <div class="arch-role">Email notifications</div>
+      <div class="arch-cred">⏳ Pending registration at sendgrid.com</div>
+    </div>
+  </div>
+
+  <h3>Data Flow</h3>
+  <ul class="flow-list">
+    <li><span class="flow-zap">Zap 1</span> <span>App → Sheets (Orders + Customers rows) + ClickUp task + SMS + Email</span></li>
+    <li><span class="flow-zap">Zap 2</span> <span>App → Sheets status update + ClickUp status + Ready SMS/Email + Pickup receipt</span></li>
+    <li><span class="flow-zap">Zap 3</span> <span>App → Customer loop → Twilio SMS + SendGrid email (blasts)</span></li>
+    <li><span class="flow-zap">Zap 4</span> <span>ClickUp (Sync to Sheet checked) → Sheets row update</span></li>
+    <li><span class="flow-zap">Zap 5</span> <span>ClickUp (status = Completed) → ClickUp comment + SendGrid receipt email</span></li>
+    <li><span class="flow-zap">Zap 6</span> <span>App → Sheets Menu tab rewrite</span></li>
+    <li><span class="flow-zap">Zap 8</span> <span>App → Sheets Tags tab rewrite</span></li>
+  </ul>
+</div>
+
+<!-- Section 2 -->
+<div class="section" id="s2">
+  <div class="section-header">
+    <div class="section-num">2</div>
+    <div class="section-title">All Credentials &amp; Keys</div>
+  </div>
+  <div class="callout danger">
+    <span class="callout-icon">🔐</span>
+    <div><strong>Security note</strong> All API keys baked into the HTML file are readable by anyone with the GitHub repo URL. The ClickUp token is the highest-risk item. Plan to move credentials to environment variables or a private repo once the business scales.</div>
+  </div>
+
+  <h3>Baked into index.html (CFG object)</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Key</th><th>Value / Location</th></tr></thead>
+      <tbody>
+        <tr><td><code>cuToken</code></td><td><code>pk_57036392_NOWNGQCANQ43LM9LZSEJT44Y3BQAKTK8</code></td></tr>
+        <tr><td><code>cuListId</code></td><td><code>901326954708</code> — Master Order List</td></tr>
+        <tr><td><code>cuCustomerListId</code></td><td><code>901326954728</code> — Master Customer List</td></tr>
+        <tr><td><code>zap1</code></td><td><code>hooks.zapier.com/hooks/catch/20594220/4btfeja/</code></td></tr>
+        <tr><td><code>zap2</code></td><td><code>hooks.zapier.com/hooks/catch/20594220/4btfna2/</code></td></tr>
+        <tr><td><code>zap3</code></td><td><code>hooks.zapier.com/hooks/catch/20594220/4btfvwf/</code></td></tr>
+        <tr><td><code>zap4</code></td><td><code>hooks.zapier.com/hooks/catch/20594220/4btabe6/</code></td></tr>
+        <tr><td><code>zap6</code></td><td><code>hooks.zapier.com/hooks/catch/20594220/4bmnre4/</code></td></tr>
+        <tr><td><code>zap8</code></td><td><code>hooks.zapier.com/hooks/catch/20594220/4b17y11/</code></td></tr>
+        <tr><td><code>ordersCSV</code></td><td>Sheets pub URL, <code>gid=0</code></td></tr>
+        <tr><td><code>customersCSV</code></td><td>Sheets pub URL, <code>gid=363906885</code></td></tr>
+        <tr><td><code>tagsCSV</code></td><td>Sheets pub URL, <code>gid=558976844</code></td></tr>
+        <tr><td><code>dropdownsCSV</code></td><td>Sheets pub URL, <code>gid=1796801270</code></td></tr>
+        <tr><td><code>employeesCSV</code></td><td>Sheets pub URL, <code>gid=454654839</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Google Sheets Tab Reference</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Tab</th><th>gid</th><th>Purpose</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Orders</strong></td><td><code>0</code></td><td>One row per order — master order record</td></tr>
+        <tr><td><strong>Customers</strong></td><td><code>363906885</code></td><td>Customer CRM — built by Zap 1</td></tr>
+        <tr><td><strong>Menu</strong></td><td><code>1672340917</code></td><td>Menu items — read by app on load</td></tr>
+        <tr><td><strong>Grocery</strong></td><td><code>957280613</code></td><td>Shopping log — Jovell fills actuals</td></tr>
+        <tr><td><strong>Config</strong></td><td><code>760088355</code></td><td>API keys reference (not used by app directly)</td></tr>
+        <tr><td><strong>Employees</strong></td><td><code>454654839</code></td><td>Passcode auth — published as CSV</td></tr>
+        <tr><td><strong>Blasts</strong></td><td><code>1892805698</code></td><td>Blast log — future use</td></tr>
+        <tr><td><strong>Dropdowns</strong></td><td><code>1796801270</code></td><td>Payment Method + Pay Status ClickUp indexes</td></tr>
+        <tr><td><strong>Tags</strong></td><td><code>558976844</code></td><td>Master customer tag list — synced via Zap 8</td></tr>
+        <tr><td><strong>Key</strong></td><td>varies</td><td>Tab link index — admin reference</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Section 3 -->
+<div class="section" id="s3">
+  <div class="section-header">
+    <div class="section-num">3</div>
+    <div class="section-title">Deploying App Updates</div>
+  </div>
+  <p style="font-size:14.5px; color:#444; margin-bottom:0.75rem;">All code lives in a single file: <code>index.html</code> in the <code>c3jumpw/Rhis-Kitchen</code> GitHub repo. GitHub Pages serves it publicly.</p>
+
+  <h3>How to deploy a code change</h3>
+  <ol class="step-list">
+    <li>Edit the local <code>index.html</code> file (or receive updated file from MK)</li>
+    <li>Go to <a href="https://github.com/c3jumpw/Rhis-Kitchen" target="_blank">github.com/c3jumpw/Rhis-Kitchen</a></li>
+    <li>Click <code>index.html</code> → click the pencil (Edit) icon → paste new content → Commit changes</li>
+    <li><em>Or:</em> use GitHub Desktop to drag-and-drop the file and push</li>
+    <li>Wait 60 seconds → clear browser cache (<kbd>Ctrl+Shift+R</kbd>) → verify at the live URL</li>
+  </ol>
+
+  <h3>What's baked in vs configurable</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Item</th><th>How to change it</th></tr></thead>
+      <tbody>
+        <tr><td>Webhook URLs</td><td>Edit <code>CFG.zap1–8</code> in the <code>index.html</code> source</td></tr>
+        <tr><td>ClickUp token</td><td>Edit <code>CFG.cuToken</code> — also update in Zapier My Apps</td></tr>
+        <tr><td>Menu items (initial)</td><td>Edit <code>initSample()</code> function, or rely on Sheets auto-load</td></tr>
+        <tr><td>Employee passcodes</td><td>Edit Google Sheets → Employees tab</td></tr>
+        <tr><td>Master tags</td><td>App Settings → Tag Manager → Push Tags to Sheets</td></tr>
+        <tr><td>Dropdown indexes</td><td>Edit Google Sheets → Dropdowns tab</td></tr>
+        <tr><td>Tax default</td><td>Edit <code>CFG.taxRate</code> in <code>index.html</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Section 4 -->
+<div class="section" id="s4">
+  <div class="section-header">
+    <div class="section-num">4</div>
+    <div class="section-title">Zapier Zap Reference</div>
+  </div>
+  <p style="font-size:14px; color:#555; margin-bottom:0.75rem;">All Zaps live in Zapier under the <strong>CRK folder</strong>, Jeffrey Akukwe's account.</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Zap</th><th>Trigger</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Zap 1</strong> — New Order</td><td>Webhook <code>4btfeja</code> → Sheets + ClickUp + SMS + Email</td><td><span class="badge live">Live</span> <span class="badge pending">SMS/Email pending</span></td></tr>
+        <tr><td><strong>Zap 2</strong> — Status Change</td><td>Webhook <code>4btfna2</code> → Sheets + ClickUp + notifications</td><td><span class="badge live">Live</span> <span class="badge pending">SMS/Email pending</span></td></tr>
+        <tr><td><strong>Zap 3</strong> — Blast</td><td>Webhook <code>4btfvwf</code> → loop → SMS + Email per customer</td><td><span class="badge built">Built</span> <span class="badge pending">SMS/Email pending</span></td></tr>
+        <tr><td><strong>Zap 4</strong> — CU Reverse Sync</td><td>ClickUp task updated → Sheets row update</td><td><span class="badge live">Live</span></td></tr>
+        <tr><td><strong>Zap 5</strong> — Final Receipt</td><td>ClickUp status = Completed → comment + email</td><td><span class="badge built">Built</span> <span class="badge pending">Email pending</span></td></tr>
+        <tr><td><strong>Zap 6</strong> — Menu Push</td><td>Webhook <code>4bmnre4</code> → delete rows → rewrite Menu tab</td><td><span class="badge live">Live</span></td></tr>
+        <tr><td><strong>Zap 8</strong> — Tags Push</td><td>Webhook <code>4b17y11</code> → delete rows → rewrite Tags tab</td><td><span class="badge live">Live</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Zap 1 — Step-by-step structure</h3>
+  <ol class="step-list">
+    <li>Webhooks → Catch Hook (trigger)</li>
+    <li>Google Sheets → Lookup Dropdowns (Payment Method index)</li>
+    <li>Google Sheets → Lookup Dropdowns (Pay Status index)</li>
+    <li>ClickUp → Create Task (returns Task ID used as Order ID everywhere)</li>
+    <li>Twilio → SMS to customer <span class="badge pending">PENDING</span></li>
+    <li>SendGrid → Email to customer <span class="badge pending">PENDING</span></li>
+    <li>Twilio → SMS alert to Jeffrey <span class="badge pending">PENDING</span></li>
+    <li>Google Sheets → Create Orders row (uses ClickUp Task ID as Order ID)</li>
+    <li>Formatter → Convert to uppercase (Order ID)</li>
+    <li>Google Sheets → Lookup Customers row (create if not found)</li>
+    <li>Paths → New Customer (Data Was Found = false) → Delay 0min</li>
+    <li>Paths → Returning Customer (Data Was Found = true) → Math +1 orders, +total spent → Update Customers row</li>
+  </ol>
+
+  <h3>Activating Twilio and SendGrid (when ready)</h3>
+  <div class="callout info">
+    <span class="callout-icon">📋</span>
+    <div>
+      <strong>Twilio</strong> Sign up at twilio.com → buy a US number → add to Zapier My Apps with Account SID + Auth Token<br><br>
+      <strong>SendGrid</strong> Sign up at sendgrid.com → verify sender email → create API key → add to Zapier My Apps<br><br>
+      <strong>In Zap 1:</strong> add SMS step after ClickUp Create Task, email step after SMS<br>
+      <strong>In Zap 2:</strong> fill in pending Twilio/SendGrid steps in Path A (Ready) and Path B (Completed)<br>
+      <strong>In Zap 3:</strong> fill in Twilio SMS and SendGrid Email inside the customer loop
+    </div>
+  </div>
+</div>
+
+<!-- Section 5 -->
+<div class="section" id="s5">
+  <div class="section-header">
+    <div class="section-num">5</div>
+    <div class="section-title">ClickUp Configuration</div>
+  </div>
+
+  <h3>Master Order List — Custom Fields</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Field</th><th>Type / Notes</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Order ID</strong></td><td>Text — auto-set by ClickUp automation (copies Task ID on creation)</td></tr>
+        <tr><td><strong>Customer Name</strong></td><td>Text — populated by Zap 1 + direct API</td></tr>
+        <tr><td><strong>Customer Phone</strong></td><td>Text — ⚠️ NOT Phone type; Phone type rejects format</td></tr>
+        <tr><td><strong>Customer Email</strong></td><td>Email — populated by Zap 1 + direct API</td></tr>
+        <tr><td><strong>Order Items</strong></td><td>Long text — multiline list from Zap 1</td></tr>
+        <tr><td><strong>Order Notes</strong></td><td>Long text — from app order notes field</td></tr>
+        <tr><td><strong>Order Total</strong></td><td>Currency — populated by Zap 1</td></tr>
+        <tr><td><strong>Payment Method</strong></td><td>Dropdown — indexes: CashApp=0, Zelle=1, Stripe=2, Cash=3, PayPal=4, Website=5</td></tr>
+        <tr><td><strong>Pay Status</strong></td><td>Dropdown — indexes: Unpaid=0, Deposit Paid=1, Paid In Full=2</td></tr>
+        <tr><td><strong>Pickup Date</strong></td><td>Date — millisecond timestamp (noon local time to avoid timezone shift)</td></tr>
+        <tr><td><strong>Pickup Time</strong></td><td>Text — e.g. <code>2:00 PM</code></td></tr>
+        <tr><td><strong>Date Order Placed</strong></td><td>Date — set by ClickUp automation on task creation</td></tr>
+        <tr><td><strong>Sync to Sheet</strong></td><td>Checkbox — triggers automation + Zap 4 when checked</td></tr>
+        <tr><td><strong>Void/Cancel Order</strong></td><td>Checkbox — triggers automation to zero Order Total</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>ClickUp Automations</h3>
+  <ul style="padding-left:1.4rem; font-size:14px; color:#444;">
+    <li style="padding:5px 0;">Task created → Update <strong>Order ID</strong> field = Task ID AND Update <strong>Date Order Placed</strong> = Now</li>
+    <li style="padding:5px 0;">Void/Cancel Order checked AND Status = Completed → Set <strong>Order Total</strong> to $0</li>
+    <li style="padding:5px 0;">Sync to Sheet checked → Post comment <em>'Order updated [timestamp]'</em> → Uncheck Sync to Sheet</li>
+  </ul>
+
+  <h3>Status Mapping (app ↔ ClickUp)</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>App Status</th><th>ClickUp Status</th></tr></thead>
+      <tbody>
+        <tr><td>New</td><td>Open</td></tr>
+        <tr><td>Confirmed</td><td>Confirmed</td></tr>
+        <tr><td>In Progress</td><td>Cooking</td></tr>
+        <tr><td>Ready</td><td>Ready</td></tr>
+        <tr><td>Completed</td><td>Picked Up / Completed</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Section 6 -->
+<div class="section" id="s6">
+  <div class="section-header">
+    <div class="section-num">6</div>
+    <div class="section-title">Troubleshooting Common Issues</div>
+  </div>
+  <ul class="trouble-list">
+
+    <li class="trouble-item">
+      <div class="trouble-problem">🔴 Order doesn't appear in ClickUp</div>
+      <div class="trouble-body">
+        <div class="trouble-cause"><div class="trouble-label">Likely cause</div>Phone number format rejected OR ClickUp 400 error</div>
+        <div class="trouble-fix"><div class="trouble-label">Fix</div>Check Customer Phone field is Text type (not Phone type)</div>
+      </div>
+    </li>
+
+    <li class="trouble-item">
+      <div class="trouble-problem">🔴 Zap 1 errors with 'Value not option index'</div>
+      <div class="trouble-body">
+        <div class="trouble-cause"><div class="trouble-label">Likely cause</div>Payment dropdown not using index lookup</div>
+        <div class="trouble-fix"><div class="trouble-label">Fix</div>Ensure Steps 2/3 use Dropdowns tab lookup → Column C (ClickUp Index), not Column B (Label)</div>
+      </div>
+    </li>
+
+    <li class="trouble-item">
+      <div class="trouble-problem">🔴 Sheets Orders row not created</div>
+      <div class="trouble-body">
+        <div class="trouble-cause"><div class="trouble-label">Likely cause</div>Zap 1 failed at ClickUp step, skipping Sheets step</div>
+        <div class="trouble-fix"><div class="trouble-label">Fix</div>Fix ClickUp error first — Sheets step is downstream in Zap 1</div>
+      </div>
+    </li>
+
+    <li class="trouble-item">
+      <div class="trouble-problem">🟡 Customer profile name disappears</div>
+      <div class="trouble-body">
+        <div class="trouble-cause"><div class="trouble-label">Likely cause</div>Tag added before order loaded into APP.customers</div>
+        <div class="trouble-fix"><div class="trouble-label">Fix</div>Fixed in current code — localStorage now preserves names</div>
+      </div>
+    </li>
+
+    <li class="trouble-item">
+      <div class="trouble-problem">🟡 App loads blank orders on refresh</div>
+      <div class="trouble-body">
+        <div class="trouble-cause"><div class="trouble-label">Likely cause</div>Sheets Orders CSV not published</div>
+        <div class="trouble-fix"><div class="trouble-label">Fix</div>File → Share → Publish to web → Orders → CSV → Publish</div>
+      </div>
+    </li>
+
+    <li class="trouble-item">
+      <div class="trouble-problem">🟡 Webhook CORS error / Failed to fetch</div>
+      <div class="trouble-body">
+        <div class="trouble-cause"><div class="trouble-label">Likely cause</div>Browser blocking cross-origin POST with JSON header</div>
+        <div class="trouble-fix"><div class="trouble-label">Fix</div>Fixed — app uses text/plain which skips CORS preflight</div>
+      </div>
+    </li>
+
+    <li class="trouble-item">
+      <div class="trouble-problem">🟡 ClickUp custom fields empty after sync</div>
+      <div class="trouble-body">
+        <div class="trouble-cause"><div class="trouble-label">Likely cause</div>cuFieldMap not loaded (Fetch Statuses not clicked)</div>
+        <div class="trouble-fix"><div class="trouble-label">Fix</div>Auto-loads on page open — click Fetch Statuses in Settings if still empty</div>
+      </div>
+    </li>
+
+    <li class="trouble-item">
+      <div class="trouble-problem">🟡 Blast count shows wrong number</div>
+      <div class="trouble-body">
+        <div class="trouble-cause"><div class="trouble-label">Likely cause</div>Tags or customer data loaded async after count renders</div>
+        <div class="trouble-fix"><div class="trouble-label">Fix</div>Tags and orders now call updateBlastCount() on load — fixed in current code</div>
+      </div>
+    </li>
+
+    <li class="trouble-item">
+      <div class="trouble-problem">🟡 Duplicate orders in Sheets</div>
+      <div class="trouble-body">
+        <div class="trouble-cause"><div class="trouble-label">Likely cause</div>'Create if not found' set to Yes on Lookup step in Zap 2</div>
+        <div class="trouble-fix"><div class="trouble-label">Fix</div>Set <strong>Create if not found</strong> to NO in every Zap 2 Sheets Lookup step</div>
+      </div>
+    </li>
+
+    <li class="trouble-item">
+      <div class="trouble-problem">🟡 Tags lost after page refresh</div>
+      <div class="trouble-body">
+        <div class="trouble-cause"><div class="trouble-label">Likely cause</div>No localStorage — masterTags reset every load</div>
+        <div class="trouble-fix"><div class="trouble-label">Fix</div>Fixed — APP.masterTags and APP.customers now saved to localStorage</div>
+      </div>
+    </li>
+
+  </ul>
+</div>
+
+<!-- Section 7 -->
+<div class="section" id="s7">
+  <div class="section-header">
+    <div class="section-num">7</div>
+    <div class="section-title">Routine Maintenance</div>
+  </div>
+
+  <div class="maint-block">
+    <div class="maint-header">
+      <span class="maint-freq">📅 Weekly</span>
+      <span class="maint-who">— Jovell</span>
+    </div>
+    <div class="maint-body">
+      <ul>
+        <li>Review the Blasts tab in Sheets — ensure sent blasts are logged</li>
+        <li>Check Orders tab for rows without Order IDs — these are sync failures, flag for MK</li>
+        <li>Archive completed ClickUp tasks (move to a Completed archive folder)</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="maint-block">
+    <div class="maint-header">
+      <span class="maint-freq">📆 Monthly</span>
+      <span class="maint-who">— Jeffrey / MK</span>
+    </div>
+    <div class="maint-body">
+      <ul>
+        <li>Review and update employee passcodes in Sheets → Employees tab</li>
+        <li>Update Dropdowns tab if payment methods or pay status options change</li>
+        <li>Check Zapier task usage — free plan allows 100 tasks/month, Starter allows 750</li>
+        <li>Review customer tags — remove outdated ones via Settings → Tag Manager → Push Tags to Sheets</li>
+        <li>Pull Cash App and Zelle transaction history → add new food customers to Customers tab</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="maint-block">
+    <div class="maint-header">
+      <span class="maint-freq">🍽 Adding a new menu item</span>
+    </div>
+    <div class="maint-body">
+      <ol class="step-list" style="margin-top:0.5rem;">
+        <li>Open the app → Menu tab → Quick Add Item</li>
+        <li>Fill in: Name, Type, Price, Cost, Ingredients (comma-separated), Servings, Description</li>
+        <li>Click <strong>Update Menu</strong> to push to Sheets</li>
+        <li>Menu CSV auto-reloads next time anyone opens the app</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="maint-block">
+    <div class="maint-header">
+      <span class="maint-freq">👤 Adding a new employee</span>
+    </div>
+    <div class="maint-body">
+      <ol class="step-list" style="margin-top:0.5rem;">
+        <li>Open Google Sheets → Employees tab</li>
+        <li>Add a new row: Employee ID (any unique number), Name, Passcode</li>
+        <li>The CSV is already published — changes are live within 60 seconds</li>
+      </ol>
+    </div>
+  </div>
+</div>
+
+<!-- Section 8 -->
+<div class="section" id="s8">
+  <div class="section-header">
+    <div class="section-num">8</div>
+    <div class="section-title">Future Development Roadmap</div>
+  </div>
+  <div class="roadmap-grid">
+    <div class="roadmap-card">
+      <div class="roadmap-title">💬 Twilio + SendGrid</div>
+      <div class="roadmap-desc">Complete Zap 1/2/3/5 SMS and email steps once accounts are registered</div>
+    </div>
+    <div class="roadmap-card">
+      <div class="roadmap-title">🛒 Customer-facing order page</div>
+      <div class="roadmap-desc">Separate public page with Stripe checkout — customer orders, Zap fires, OMS receives automatically</div>
+    </div>
+    <div class="roadmap-card">
+      <div class="roadmap-title">✅ ClickUp Master Customer List</div>
+      <div class="roadmap-desc">Mirror customer records into ClickUp CRM list for Jeffrey's pipeline view</div>
+    </div>
+    <div class="roadmap-card">
+      <div class="roadmap-title">💳 Stripe Payment Integration</div>
+      <div class="roadmap-desc">Zap 1 creates Stripe Payment Link → sends via SMS → auto-confirms on payment</div>
+    </div>
+    <div class="roadmap-card">
+      <div class="roadmap-title">🖥 Custom Backend</div>
+      <div class="roadmap-desc">Node.js + database to replace static HTML + localStorage. True multi-device sync, no Sheets CSV limitations</div>
+    </div>
+    <div class="roadmap-card">
+      <div class="roadmap-title">🔑 Role-based Access</div>
+      <div class="roadmap-desc">Different views for Rhi (Kanban + Grocery), Jovell (Customers), Jeffrey (full). Controlled by passcode role</div>
+    </div>
+    <div class="roadmap-card">
+      <div class="roadmap-title">📊 Tax Business Vertical</div>
+      <div class="roadmap-desc">Separate ClickUp space for tax practice CRM — IT contractors, high-net-worth, influencers segment</div>
+    </div>
+  </div>
+</div>
+
+<footer>Technical Admin — Restricted Distribution &nbsp;·&nbsp; Chef Rhi's Kitchen &nbsp;·&nbsp; Version 1.0 · June 2026</footer>
+</body>
+</html>
